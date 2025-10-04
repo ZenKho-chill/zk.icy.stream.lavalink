@@ -5,7 +5,7 @@
 ### Triệu chứng:
 ```
 Caused by: java.io.FileNotFoundException: 
-https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.3/zk.icy.stream.lavalink-v1.0.3.jar
+https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.4/zk.icy.stream.lavalink-v1.0.4.jar
 ```
 
 ### Nguyên nhân:
@@ -23,7 +23,7 @@ Nếu hiển thị "Building..." hoặc không có gì, hãy đợi vài phút r
 #### Bước 2: Verify version tồn tại
 Kiểm tra releases: https://github.com/ZenKho-chill/zk.icy.stream.lavalink/releases
 
-Version hiện tại: **v1.0.3** (recommended)
+Version hiện tại: **v1.0.4** (recommended)
 
 #### Bước 3: Copy cấu hình đúng cách
 **KHÔNG copy từ README**, hãy dùng file `application.example.yml` trong repo:
@@ -31,13 +31,13 @@ Version hiện tại: **v1.0.3** (recommended)
 ```yaml
 lavalink:
   plugins:
-    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.3"
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.4"
       repository: "https://jitpack.io"
 ```
 
 **Lưu ý quan trọng:**
 - Phải có dấu ngoặc kép `"` quanh dependency và repository
-- Version phải có `v` phía trước (ví dụ: `v1.0.3` chứ KHÔNG phải `1.0.1`)
+- Version phải có `v` phía trước (ví dụ: `v1.0.4` chứ KHÔNG phải `1.0.1`)
 - Không có khoảng trắng thừa ở cuối dòng
 
 #### Bước 4: Xóa cache và thử lại
@@ -66,10 +66,10 @@ java.lang.ClassNotFoundException: com.zenkho.icy.IcyStreamPlugin
 Bạn đang dùng version cũ (v1.0.0) có lỗi.
 
 ### Giải pháp:
-Cập nhật lên **v1.0.3**:
+Cập nhật lên **v1.0.4**:
 
 ```yaml
-- dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.3"  # ← Đảm bảo là v1.0.3
+- dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.4"  # ← Đảm bảo là v1.0.4
 ```
 
 ---
@@ -88,10 +88,10 @@ has been compiled by a more recent version of the Java Runtime
 - Lavalink của bạn đang chạy trên Java 18
 
 ### Giải pháp:
-Cập nhật lên **v1.0.3** (được compile với Java 17):
+Cập nhật lên **v1.0.4** (được compile với Java 17):
 
 ```yaml
-- dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.3"
+- dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.4"
 ```
 
 **Hoặc** nâng cấp Java lên 21+:
@@ -123,7 +123,7 @@ Lavalink khởi động nhưng không thấy log:
 ```yaml
 lavalink:           # ← Phải căn đều từ đầu dòng
   plugins:          # ← Indent 2 spaces
-    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.3"  # ← Indent 4 spaces
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.4"  # ← Indent 4 spaces
       repository: "https://jitpack.io"                                      # ← Indent 6 spaces
 ```
 
@@ -195,7 +195,7 @@ JitPack đang build lần đầu hoặc đang bận.
 Đợi 1-2 phút và thử lại. JitPack cần thời gian để build artifact.
 
 Kiểm tra build status:
-https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.3/build.log
+https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.4/build.log
 
 Nếu thấy "BUILD SUCCESSFUL" ở cuối log thì đã OK.
 
@@ -203,7 +203,7 @@ Nếu thấy "BUILD SUCCESSFUL" ở cuối log thì đã OK.
 
 ## Checklist khi gặp lỗi
 
-- [ ] Đang dùng version v1.0.3 (không phải v1.0.0 hoặc v1.0.3)
+- [ ] Đang dùng version v1.0.4 (không phải v1.0.0 hoặc v1.0.4)
 - [ ] Java version 17+ (check: `java -version`)
 - [ ] Đã đợi JitPack build xong (check https://jitpack.io)
 - [ ] YAML format đúng (spaces, không có tabs)
@@ -237,10 +237,10 @@ Test xem plugin có thể tải được không:
 
 ```bash
 # Linux/Mac
-curl -I https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.3/zk.icy.stream.lavalink-v1.0.3.jar
+curl -I https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.4/zk.icy.stream.lavalink-v1.0.4.jar
 
 # Windows PowerShell
-Invoke-WebRequest -Uri "https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.3/zk.icy.stream.lavalink-v1.0.3.jar" -Method Head
+Invoke-WebRequest -Uri "https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.4/zk.icy.stream.lavalink-v1.0.4.jar" -Method Head
 ```
 
 Nếu return 200 OK hoặc có thể download → Plugin OK, vấn đề ở Lavalink config.
