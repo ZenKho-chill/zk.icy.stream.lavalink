@@ -45,7 +45,7 @@ Add to your Lavalink `application.yml`:
 ```yaml
 lavalink:
   plugins:
-    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.0"
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.1"
       repository: "https://jitpack.io"
 ```
 
