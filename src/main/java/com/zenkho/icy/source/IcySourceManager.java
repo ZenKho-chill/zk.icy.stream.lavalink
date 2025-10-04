@@ -1,5 +1,6 @@
 package com.zenkho.icy.source;
 
+import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
@@ -42,10 +43,12 @@ public class IcySourceManager implements AudioSourceManager {
 
     private final Config config;
     private final OkHttpClient httpClient;
+    private final MediaContainerRegistry containerRegistry;
 
     public IcySourceManager(Config config) {
         this.config = config;
         this.httpClient = createHttpClient();
+        this.containerRegistry = MediaContainerRegistry.DEFAULT_REGISTRY;
         log.info("IcySourceManager initialized");
     }
 
@@ -162,6 +165,10 @@ public class IcySourceManager implements AudioSourceManager {
 
     public OkHttpClient getHttpClient() {
         return httpClient;
+    }
+
+    public MediaContainerRegistry getMediaContainerRegistry() {
+        return containerRegistry;
     }
 
     @Override
