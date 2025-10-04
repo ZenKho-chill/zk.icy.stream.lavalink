@@ -1,20 +1,21 @@
 plugins {
     java
     alias(libs.plugins.lavalink)
+    kotlin("jvm") version "1.9.22"
 }
 
-group = "com.example"
-version = "0.1.0"
+group = "com.zenkho"
+version = "1.0.0"
 
 lavalinkPlugin {
-    name = "plugin-template"
+    name = "icy-stream-plugin"
     apiVersion = libs.versions.lavalink.api
     serverVersion = libs.versions.lavalink.server
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -25,5 +26,9 @@ tasks {
 }
 
 dependencies {
-    // add your dependencies here
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    
+    // Logging
+    implementation("org.slf4j:slf4j-api:2.0.9")
 }
