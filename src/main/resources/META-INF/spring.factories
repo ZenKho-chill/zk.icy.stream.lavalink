@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.zenkho.icy.config.IcyConfig,\
+com.zenkho.icy.IcyStreamPlugin
