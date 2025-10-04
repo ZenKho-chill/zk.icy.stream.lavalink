@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.zenkho"
-version = "1.0.1"
+version = "1.0.2"
 
 lavalinkPlugin {
     name = "icy-stream-plugin"
@@ -18,7 +18,7 @@ lavalinkPlugin {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
