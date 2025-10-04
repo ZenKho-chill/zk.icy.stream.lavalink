@@ -12,6 +12,8 @@ lavalinkPlugin {
     name = "icy-stream-plugin"
     apiVersion = libs.versions.lavalink.api
     serverVersion = libs.versions.lavalink.server
+    configurePublishing = true
+    path = "com.zenkho.icy.IcyStreamPlugin"
 }
 
 java {
