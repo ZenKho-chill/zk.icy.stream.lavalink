@@ -7,7 +7,7 @@
 ```yaml
 lavalink:
   plugins:
-    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.1"
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.2"
       repository: "https://jitpack.io"
 
 plugins:

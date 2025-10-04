@@ -5,7 +5,7 @@
 ### Triệu chứng:
 ```
 Caused by: java.io.FileNotFoundException: 
-https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.1/zk.icy.stream.lavalink-v1.0.1.jar
+https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.2/zk.icy.stream.lavalink-v1.0.2.jar
 ```
 
 ### Nguyên nhân:
@@ -23,7 +23,7 @@ Nếu hiển thị "Building..." hoặc không có gì, hãy đợi vài phút r
 #### Bước 2: Verify version tồn tại
 Kiểm tra releases: https://github.com/ZenKho-chill/zk.icy.stream.lavalink/releases
 
-Version hiện tại: **v1.0.1** (recommended)
+Version hiện tại: **v1.0.2** (recommended)
 
 #### Bước 3: Copy cấu hình đúng cách
 **KHÔNG copy từ README**, hãy dùng file `application.example.yml` trong repo:
@@ -31,13 +31,13 @@ Version hiện tại: **v1.0.1** (recommended)
 ```yaml
 lavalink:
   plugins:
-    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.1"
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.2"
       repository: "https://jitpack.io"
 ```
 
 **Lưu ý quan trọng:**
 - Phải có dấu ngoặc kép `"` quanh dependency và repository
-- Version phải có `v` phía trước (ví dụ: `v1.0.1` chứ KHÔNG phải `1.0.1`)
+- Version phải có `v` phía trước (ví dụ: `v1.0.2` chứ KHÔNG phải `1.0.1`)
 - Không có khoảng trắng thừa ở cuối dòng
 
 #### Bước 4: Xóa cache và thử lại
@@ -66,10 +66,45 @@ java.lang.ClassNotFoundException: com.zenkho.icy.IcyStreamPlugin
 Bạn đang dùng version cũ (v1.0.0) có lỗi.
 
 ### Giải pháp:
-Cập nhật lên **v1.0.1**:
+Cập nhật lên **v1.0.2**:
 
 ```yaml
-- dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.1"  # ← Đảm bảo là v1.0.1
+- dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.2"  # ← Đảm bảo là v1.0.2
+```
+
+---
+
+## Vấn đề 2.5: UnsupportedClassVersionError
+
+### Triệu chứng:
+```
+java.lang.UnsupportedClassVersionError: com/zenkho/icy/IcyStreamPlugin 
+has been compiled by a more recent version of the Java Runtime 
+(class file version 65.0), this version only recognizes class file versions up to 62.0
+```
+
+### Nguyên nhân:
+- Version cũ (v1.0.0, v1.0.1) được compile với Java 21
+- Lavalink của bạn đang chạy trên Java 18
+
+### Giải pháp:
+Cập nhật lên **v1.0.2** (được compile với Java 17):
+
+```yaml
+- dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.2"
+```
+
+**Hoặc** nâng cấp Java lên 21+:
+```bash
+# Check Java version
+java -version
+
+# Nếu < 21, cài đặt Java 21
+# Ubuntu/Debian
+sudo apt install openjdk-21-jre
+
+# Docker: Dùng image với Java 21
+FROM openjdk:21-slim
 ```
 
 ---
@@ -88,7 +123,7 @@ Lavalink khởi động nhưng không thấy log:
 ```yaml
 lavalink:           # ← Phải căn đều từ đầu dòng
   plugins:          # ← Indent 2 spaces
-    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.1"  # ← Indent 4 spaces
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.2"  # ← Indent 4 spaces
       repository: "https://jitpack.io"                                      # ← Indent 6 spaces
 ```
 
@@ -160,7 +195,7 @@ JitPack đang build lần đầu hoặc đang bận.
 Đợi 1-2 phút và thử lại. JitPack cần thời gian để build artifact.
 
 Kiểm tra build status:
-https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.1/build.log
+https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.2/build.log
 
 Nếu thấy "BUILD SUCCESSFUL" ở cuối log thì đã OK.
 
@@ -168,13 +203,13 @@ Nếu thấy "BUILD SUCCESSFUL" ở cuối log thì đã OK.
 
 ## Checklist khi gặp lỗi
 
-- [ ] Đang dùng version v1.0.1 (không phải v1.0.0)
+- [ ] Đang dùng version v1.0.2 (không phải v1.0.0 hoặc v1.0.2)
+- [ ] Java version 17+ (check: `java -version`)
 - [ ] Đã đợi JitPack build xong (check https://jitpack.io)
 - [ ] YAML format đúng (spaces, không có tabs)
 - [ ] Có dấu ngoặc kép `"` quanh dependency và repository
 - [ ] Version có chữ `v` phía trước
 - [ ] Lavalink version 4.0.6+
-- [ ] Java version 18+ (recommend 21)
 - [ ] Không có ký tự ẩn trong file YAML
 
 ---
@@ -202,10 +237,10 @@ Test xem plugin có thể tải được không:
 
 ```bash
 # Linux/Mac
-curl -I https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.1/zk.icy.stream.lavalink-v1.0.1.jar
+curl -I https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.2/zk.icy.stream.lavalink-v1.0.2.jar
 
 # Windows PowerShell
-Invoke-WebRequest -Uri "https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.1/zk.icy.stream.lavalink-v1.0.1.jar" -Method Head
+Invoke-WebRequest -Uri "https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream.lavalink/v1.0.2/zk.icy.stream.lavalink-v1.0.2.jar" -Method Head
 ```
 
 Nếu return 200 OK hoặc có thể download → Plugin OK, vấn đề ở Lavalink config.

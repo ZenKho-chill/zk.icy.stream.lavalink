@@ -11,7 +11,7 @@ Mở file `application.yml` của Lavalink và thêm cấu hình sau:
 ```yaml
 lavalink:
   plugins:
-    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.1"
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.2"
       repository: "https://jitpack.io"
 ```
 
@@ -62,7 +62,7 @@ Khi có phiên bản mới, chỉ cần thay đổi số phiên bản trong `app
 ```yaml
 lavalink:
   plugins:
-    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.1"
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.2"
       repository: "https://jitpack.io"
 ```
 
@@ -79,7 +79,7 @@ server:
 
 lavalink:
   plugins:
-    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.1"
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.2"
       repository: "https://jitpack.io"
   
   server:

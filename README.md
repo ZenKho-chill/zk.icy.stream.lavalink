@@ -31,7 +31,7 @@ This plugin solves all these issues.
 
 ## 📋 Requirements
 
-- **Java**: 21 or higher
+- **Java**: 17 or higher (works with 17, 18, 19, 20, 21)
 - **Lavalink**: 4.0.6 or higher
 - **Memory**: ~10-50 MB per active stream
 - **Network**: Stable internet connection
@@ -45,7 +45,7 @@ Add to your Lavalink `application.yml`:
 ```yaml
 lavalink:
   plugins:
-    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.1"
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.2"
       repository: "https://jitpack.io"
 ```
 
