@@ -6,7 +6,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor;
-import com.zenkho.icy.config.IcyConfig;
+import com.zenkho.icy.IcyStreamPlugin.Config;
 import com.zenkho.icy.source.IcySourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +16,9 @@ public class IcyStreamAudioTrack extends DelegatedAudioTrack {
     private static final Logger log = LoggerFactory.getLogger(IcyStreamAudioTrack.class);
 
     private final IcySourceManager sourceManager;
-    private final IcyConfig config;
+    private final Config config;
 
-    public IcyStreamAudioTrack(AudioTrackInfo trackInfo, IcySourceManager sourceManager, IcyConfig config) {
+    public IcyStreamAudioTrack(AudioTrackInfo trackInfo, IcySourceManager sourceManager, Config config) {
         super(trackInfo);
         this.sourceManager = sourceManager;
         this.config = config;
@@ -52,3 +52,4 @@ public class IcyStreamAudioTrack extends DelegatedAudioTrack {
         return sourceManager;
     }
 }
+

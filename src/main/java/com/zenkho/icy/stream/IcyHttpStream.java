@@ -1,7 +1,7 @@
 package com.zenkho.icy.stream;
 
 import com.sedmelluq.discord.lavaplayer.tools.io.SeekableInputStream;
-import com.zenkho.icy.config.IcyConfig;
+import com.zenkho.icy.IcyStreamPlugin.Config;
 import com.zenkho.icy.metadata.IcyMetadataParser;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -20,14 +20,14 @@ public class IcyHttpStream implements Closeable {
 
     private final String url;
     private final OkHttpClient httpClient;
-    private final IcyConfig config;
+    private final Config config;
     private Response response;
     private IcyStreamInputStream inputStream;
     private int icyMetaInt;
     private String streamTitle;
     private int reconnectAttempts;
 
-    public IcyHttpStream(String url, OkHttpClient httpClient, IcyConfig config) throws IOException {
+    public IcyHttpStream(String url, OkHttpClient httpClient, Config config) throws IOException {
         this.url = url;
         this.httpClient = httpClient;
         this.config = config;
@@ -281,3 +281,5 @@ public class IcyHttpStream implements Closeable {
         }
     }
 }
+
+

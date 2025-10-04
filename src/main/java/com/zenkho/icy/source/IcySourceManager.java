@@ -6,7 +6,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import com.zenkho.icy.config.IcyConfig;
+import com.zenkho.icy.IcyStreamPlugin.Config;
 import com.zenkho.icy.stream.IcyStreamAudioTrack;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -40,10 +40,10 @@ public class IcySourceManager implements AudioSourceManager {
         "audio/x-scpls"
     };
 
-    private final IcyConfig config;
+    private final Config config;
     private final OkHttpClient httpClient;
 
-    public IcySourceManager(IcyConfig config) {
+    public IcySourceManager(Config config) {
         this.config = config;
         this.httpClient = createHttpClient();
         log.info("IcySourceManager initialized");
@@ -185,3 +185,4 @@ public class IcySourceManager implements AudioSourceManager {
         log.info("IcySourceManager shutdown");
     }
 }
+
