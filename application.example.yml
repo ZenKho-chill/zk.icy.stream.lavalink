@@ -1,0 +1,56 @@
+# Example Lavalink application.yml configuration with ICY Stream Plugin
+
+server:
+  port: 2333
+  address: 0.0.0.0
+
+lavalink:
+  plugins:
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.1"
+      repository: "https://jitpack.io"
+  
+  server:
+    password: "youshallnotpass"
+    sources:
+      youtube: true
+      bandcamp: true
+      soundcloud: true
+      twitch: true
+      vimeo: true
+      http: true
+      local: false
+    bufferDurationMs: 400
+    frameBufferDurationMs: 5000
+    youtubePlaylistLoadLimit: 6
+    playerUpdateInterval: 5
+    youtubeSearchEnabled: true
+    soundcloudSearchEnabled: true
+
+plugins:
+  icy:
+    # Enable automatic reconnection when stream connection is lost
+    autoReconnect: true
+    
+    # Enable metadata extraction from ICY streams (song titles, artist info)
+    enableMetadata: true
+    
+    # Connection timeout in milliseconds (default: 10 seconds)
+    connectionTimeout: 10000
+    
+    # Read timeout in milliseconds (default: 30 seconds)
+    readTimeout: 30000
+    
+    # Maximum number of reconnection attempts
+    maxRetries: 3
+    
+    # Delay between reconnection attempts in milliseconds (default: 2 seconds)
+    retryDelay: 2000
+    
+    # Follow HTTP redirects (301, 302, etc.)
+    followRedirects: true
+
+logging:
+  level:
+    root: INFO
+    lavalink: INFO
+    com.zenkho.icy: DEBUG
