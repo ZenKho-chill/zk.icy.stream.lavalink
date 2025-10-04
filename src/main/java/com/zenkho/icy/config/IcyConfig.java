@@ -1,9 +1,11 @@
 package com.zenkho.icy.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+@Configuration
+@EnableConfigurationProperties
 @ConfigurationProperties(prefix = "plugins.icy")
 public class IcyConfig {
 

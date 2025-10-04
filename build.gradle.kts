@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.zenkho"
-version = "1.0.2"
+version = "1.0.3"
 
 lavalinkPlugin {
     name = "icy-stream-plugin"
