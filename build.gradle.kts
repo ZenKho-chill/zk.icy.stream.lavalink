@@ -1,5 +1,6 @@
 plugins {
     java
+    `maven-publish`
     alias(libs.plugins.lavalink)
     kotlin("jvm") version "1.9.22"
 }
