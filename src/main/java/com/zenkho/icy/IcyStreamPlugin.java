@@ -5,16 +5,17 @@ import com.zenkho.icy.source.IcySourceManager;
 import dev.arbjerg.lavalink.api.AudioPlayerManagerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component  
+@Service
 public class IcyStreamPlugin implements AudioPlayerManagerConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(IcyStreamPlugin.class);
 
+    // NO-ARGS CONSTRUCTOR - Đây là key!
     public IcyStreamPlugin() {
         log.info("=================================================");
-        log.info("ICY Stream Plugin v1.0.6 loaded");
+        log.info("ICY Stream Plugin v1.0.8 loaded");
         log.info("=================================================");
     }
 
