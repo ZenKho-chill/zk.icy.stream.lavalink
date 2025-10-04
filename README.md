@@ -45,23 +45,23 @@ Add to your Lavalink `application.yml`:
 ```yaml
 lavalink:
   plugins:
-    - dependency: com.github.zenkho:lavalink-icy-stream-plugin:1.0.0
-      repository: https://jitpack.io
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.0"
+      repository: "https://jitpack.io"
 ```
 
 ### Method 2: Manual Installation
 
-1. Download the latest JAR from [Releases](https://github.com/zenkho/lavalink-icy-stream-plugin/releases)
+1. Download the latest JAR from [Releases](https://github.com/ZenKho-chill/zk.icy.stream.lavalink/releases)
 2. Place it in your Lavalink `plugins/` directory
 3. Restart Lavalink
 
 ### Method 3: Build from Source
 
 ```bash
-git clone https://github.com/zenkho/lavalink-icy-stream-plugin.git
-cd lavalink-icy-stream-plugin
+git clone https://github.com/ZenKho-chill/zk.icy.stream.lavalink.git
+cd zk.icy.stream.lavalink
 ./gradlew build
-cp build/libs/lavalink-icy-stream-plugin-1.0.0.jar /path/to/lavalink/plugins/
+cp build/libs/zk-icy-stream-lavalink-1.0.0.jar /path/to/lavalink/plugins/
 ```
 
 ## ⚙️ Configuration
@@ -438,7 +438,7 @@ Monitor these endpoints/logs:
 
 1. Change version in `application.yml`:
 ```yaml
-- dependency: com.github.zenkho:lavalink-icy-stream-plugin:1.1.0
+- dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.1.0"
 ```
 
 2. Restart Lavalink
@@ -490,7 +490,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 💬 Support
 
-- **Issues**: [GitHub Issues](https://github.com/zenkho/lavalink-icy-stream-plugin/issues)
+- **Issues**: [GitHub Issues](https://github.com/ZenKho-chill/zk.icy.stream.lavalink/issues)
 - **Discord**: [Lavalink Discord](https://discord.gg/jttmwHTAad) - #plugin-dev channel
 - **Documentation**: Check this README and code comments
 
@@ -508,8 +508,8 @@ Contributions welcome! Please:
 ### Development Setup
 
 ```bash
-git clone https://github.com/zenkho/lavalink-icy-stream-plugin.git
-cd lavalink-icy-stream-plugin
+git clone https://github.com/ZenKho-chill/zk.icy.stream.lavalink.git
+cd zk.icy.stream.lavalink
 ./gradlew build
 ./gradlew runLavalink  # Test with local Lavalink
 ```
@@ -517,8 +517,8 @@ cd lavalink-icy-stream-plugin
 ## 📞 Contact
 
 - **Author**: ZenKho
-- **Repository**: https://github.com/zenkho/lavalink-icy-stream-plugin
-- **Issues**: https://github.com/zenkho/lavalink-icy-stream-plugin/issues
+- **Repository**: https://github.com/ZenKho-chill/zk.icy.stream.lavalink
+- **Issues**: https://github.com/ZenKho-chill/zk.icy.stream.lavalink/issues
 
 ---
 
