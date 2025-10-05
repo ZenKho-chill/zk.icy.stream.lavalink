@@ -62,7 +62,7 @@ public class IcySourceManager implements AudioSourceManager {
                 Request original = chain.request();
                 Request request = original.newBuilder()
                     .header("Icy-MetaData", "1")
-                    .header("User-Agent", "Lavalink ICY Stream Plugin/1.1.0")
+                    .header("User-Agent", "Lavalink ICY Stream Plugin/1.1.1")
                     .header("Accept", "*/*")
                     .header("Accept-Encoding", "identity") // Disable compression to avoid header issues
                     .header("Connection", "close") // Avoid keep-alive issues
@@ -110,6 +110,12 @@ public class IcySourceManager implements AudioSourceManager {
             return false;
         }
         
+        // Early return for non-HTTP(S) URLs to avoid processing search queries from other plugins
+        if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")) {
+            log.debug("URL {} is not HTTP(S), skipping ICY stream check", url);
+            return false;
+        }
+        
         // Check URL pattern
         if (STREAM_URL_PATTERN.matcher(url).matches()) {
             return true;
@@ -119,7 +125,7 @@ public class IcySourceManager implements AudioSourceManager {
         Request headRequest = new Request.Builder()
             .url(url)
             .head()
-            .header("User-Agent", "Lavalink ICY Stream Plugin/1.1.0")
+            .header("User-Agent", "Lavalink ICY Stream Plugin/1.1.1")
             .header("Accept", "*/*")
             .build();
             
@@ -152,6 +158,9 @@ public class IcySourceManager implements AudioSourceManager {
             
             return isIcyStream;
             
+        } catch (IllegalArgumentException e) {
+            log.debug("Invalid URL format: {} - {}", url, e.getMessage());
+            return false;
         } catch (Exception e) {
             log.debug("Failed to probe URL: {} - {}", url, e.getMessage());
             // If we can't probe, let's be conservative and not assume it's a stream

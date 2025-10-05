@@ -40,7 +40,7 @@ public class IcyHttpStream implements Closeable {
             Request request = new Request.Builder()
                 .url(url)
                 .header("Icy-MetaData", "1")
-                .header("User-Agent", "Lavalink ICY Stream Plugin/1.1.0")
+                .header("User-Agent", "Lavalink ICY Stream Plugin/1.1.1")
                 .header("Accept", "*/*")
                 .header("Connection", "close")
                 .build();

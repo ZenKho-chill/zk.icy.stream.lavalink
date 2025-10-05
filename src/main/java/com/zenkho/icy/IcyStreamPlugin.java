@@ -15,7 +15,7 @@ public class IcyStreamPlugin implements AudioPlayerManagerConfiguration {
     // NO-ARGS CONSTRUCTOR - Đây là key!
     public IcyStreamPlugin() {
         log.info("=================================================");
-        log.info("ICY Stream Plugin v1.1.0 loaded");
+        log.info("ICY Stream Plugin v1.1.1 loaded");
         log.info("=================================================");
     }
 
