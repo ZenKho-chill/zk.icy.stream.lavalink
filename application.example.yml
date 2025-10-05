@@ -1,12 +1,24 @@
 # Example Lavalink application.yml configuration with ICY Stream Plugin
+# Version: 1.1.0 with improved error handling for ResponseHeaderFilter issues
 
 server:
   port: 2333
   address: 0.0.0.0
+  
+  # Undertow configuration to handle ICY streams better
+  undertow:
+    # Increase buffer sizes for ICY streams
+    buffer-size: 16384
+    io-threads: 4
+    worker-threads: 64
+    direct-buffers: true
+    
+    # Increase max headers size for ICY metadata
+    max-http-header-size: 8192
 
 lavalink:
   plugins:
-    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.0.4"
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.1.0"
       repository: "https://jitpack.io"
   
   server:
@@ -17,10 +29,12 @@ lavalink:
       soundcloud: true
       twitch: true
       vimeo: true
-      http: true
+      http: true          # Required for ICY streams
       local: false
-    bufferDurationMs: 400
-    frameBufferDurationMs: 5000
+    
+    # Increased buffers for better streaming performance
+    bufferDurationMs: 1000
+    frameBufferDurationMs: 10000
     youtubePlaylistLoadLimit: 6
     playerUpdateInterval: 5
     youtubeSearchEnabled: true
@@ -32,19 +46,18 @@ plugins:
     autoReconnect: true
     
     # Enable metadata extraction from ICY streams (song titles, artist info)
+    # Set to false if experiencing header parsing issues
     enableMetadata: true
     
-    # Connection timeout in milliseconds (default: 10 seconds)
-    connectionTimeout: 10000
-    
-    # Read timeout in milliseconds (default: 30 seconds)
-    readTimeout: 30000
+    # Increased timeouts for better reliability
+    connectionTimeout: 20000  # 20 seconds
+    readTimeout: 45000       # 45 seconds
     
     # Maximum number of reconnection attempts
-    maxRetries: 3
+    maxRetries: 5
     
-    # Delay between reconnection attempts in milliseconds (default: 2 seconds)
-    retryDelay: 2000
+    # Delay between reconnection attempts in milliseconds
+    retryDelay: 3000         # 3 seconds
     
     # Follow HTTP redirects (301, 302, etc.)
     followRedirects: true
@@ -54,3 +67,7 @@ logging:
     root: INFO
     lavalink: INFO
     com.zenkho.icy: DEBUG
+    
+    # Enable these for debugging ResponseHeaderFilter issues
+    # lavalink.server.io: DEBUG
+    # io.undertow: DEBUG

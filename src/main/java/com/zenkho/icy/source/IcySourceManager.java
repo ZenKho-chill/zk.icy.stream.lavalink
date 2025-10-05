@@ -62,7 +62,10 @@ public class IcySourceManager implements AudioSourceManager {
                 Request original = chain.request();
                 Request request = original.newBuilder()
                     .header("Icy-MetaData", "1")
-                    .header("User-Agent", "Lavalink ICY Stream Plugin/1.0")
+                    .header("User-Agent", "Lavalink ICY Stream Plugin/1.1.0")
+                    .header("Accept", "*/*")
+                    .header("Accept-Encoding", "identity") // Disable compression to avoid header issues
+                    .header("Connection", "close") // Avoid keep-alive issues
                     .build();
                 return chain.proceed(request);
             })
@@ -78,14 +81,26 @@ public class IcySourceManager implements AudioSourceManager {
     public AudioItem loadItem(AudioPlayerManager manager, AudioReference reference) {
         String identifier = reference.identifier;
         
+        log.debug("Attempting to load item: {}", identifier);
+        
         if (!isStreamUrl(identifier)) {
+            log.debug("URL {} is not identified as a stream URL", identifier);
             return null;
         }
 
         try {
-            return loadStream(identifier);
+            log.debug("Loading stream from URL: {}", identifier);
+            AudioItem result = loadStream(identifier);
+            log.debug("Successfully loaded stream: {}", identifier);
+            return result;
+        } catch (IOException e) {
+            log.error("IOException while loading stream: {} - {}", identifier, e.getMessage());
+            return null;
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid URL format: {} - {}", identifier, e.getMessage());
+            return null;
         } catch (Exception e) {
-            log.error("Failed to load stream: {}", identifier, e);
+            log.error("Unexpected error loading stream: {}", identifier, e);
             return null;
         }
     }
@@ -101,17 +116,26 @@ public class IcySourceManager implements AudioSourceManager {
         }
         
         // Optionally probe the URL to check content type
-        try (Response response = httpClient.newCall(
-            new Request.Builder()
-                .url(url)
-                .head()
-                .build()
-        ).execute()) {
+        Request headRequest = new Request.Builder()
+            .url(url)
+            .head()
+            .header("User-Agent", "Lavalink ICY Stream Plugin/1.1.0")
+            .header("Accept", "*/*")
+            .build();
+            
+        try (Response response = httpClient.newCall(headRequest).execute()) {
+            
+            if (!response.isSuccessful()) {
+                log.debug("HEAD request failed for URL: {} with code: {}", url, response.code());
+                return false;
+            }
             
             String contentType = response.header("Content-Type");
             if (contentType != null) {
+                String lowerContentType = contentType.toLowerCase();
                 for (String supportedType : SUPPORTED_CONTENT_TYPES) {
-                    if (contentType.toLowerCase().contains(supportedType)) {
+                    if (lowerContentType.contains(supportedType)) {
+                        log.debug("URL {} identified as stream by content-type: {}", url, contentType);
                         return true;
                     }
                 }
@@ -119,10 +143,18 @@ public class IcySourceManager implements AudioSourceManager {
             
             // Check for ICY protocol
             String icyName = response.header("icy-name");
-            return icyName != null;
+            String icyGenre = response.header("icy-genre");
+            boolean isIcyStream = icyName != null || icyGenre != null;
+            
+            if (isIcyStream) {
+                log.debug("URL {} identified as ICY stream", url);
+            }
+            
+            return isIcyStream;
             
         } catch (Exception e) {
-            log.debug("Failed to probe URL: {}", url, e);
+            log.debug("Failed to probe URL: {} - {}", url, e.getMessage());
+            // If we can't probe, let's be conservative and not assume it's a stream
             return false;
         }
     }
@@ -131,22 +163,24 @@ public class IcySourceManager implements AudioSourceManager {
         Request request = new Request.Builder()
             .url(url)
             .header("Icy-MetaData", "1")
+            .header("Accept", "*/*")
             .build();
 
         try (Response response = httpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response code: " + response.code());
+                throw new IOException("Unexpected response code: " + response.code() + " for URL: " + url);
             }
 
-            String title = response.header("icy-name");
+            // Safely extract headers with null checks and sanitization
+            String title = sanitizeHeader(response.header("icy-name"));
             if (title == null || title.isEmpty()) {
                 title = "Radio Stream";
             }
 
-            String genre = response.header("icy-genre");
-            String bitrate = response.header("icy-br");
+            String genre = sanitizeHeader(response.header("icy-genre"));
+            String bitrate = sanitizeHeader(response.header("icy-br"));
             
-            String author = genre != null ? genre : "Unknown";
+            String author = (genre != null && !genre.isEmpty()) ? genre : "Unknown";
             
             AudioTrackInfo trackInfo = new AudioTrackInfo(
                 title,
@@ -157,10 +191,27 @@ public class IcySourceManager implements AudioSourceManager {
                 url
             );
 
-            log.info("Loaded stream: {} - {} ({}kbps)", title, author, bitrate);
+            log.info("Loaded stream: {} - {} ({}kbps)", title, author, bitrate != null ? bitrate : "Unknown");
             
             return new IcyStreamAudioTrack(trackInfo, this, config);
+        } catch (Exception e) {
+            log.error("Failed to load stream from URL: {}", url, e);
+            throw new IOException("Failed to load stream: " + e.getMessage(), e);
         }
+    }
+    
+    /**
+     * Sanitize header values to prevent issues with special characters
+     */
+    private String sanitizeHeader(String headerValue) {
+        if (headerValue == null) {
+            return null;
+        }
+        
+        // Remove any control characters and normalize
+        return headerValue.replaceAll("[\\p{Cntrl}]", "")
+                         .trim()
+                         .replaceAll("\\s+", " "); // Replace multiple spaces with single space
     }
 
     public OkHttpClient getHttpClient() {

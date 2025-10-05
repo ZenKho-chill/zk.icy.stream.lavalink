@@ -245,3 +245,140 @@ Invoke-WebRequest -Uri "https://jitpack.io/com/github/ZenKho-chill/zk.icy.stream
 
 Nếu return 200 OK hoặc có thể download → Plugin OK, vấn đề ở Lavalink config.
 Nếu 404/500 → JitPack chưa build xong, đợi thêm.
+
+---
+
+## Vấn đề 6: ResponseHeaderFilter Error (Stack Trace liên quan đến Undertow/Spring)
+
+### Triệu chứng:
+Stack trace hiển thị lỗi trong:
+```
+at lavalink.server.io.ResponseHeaderFilter.doFilterInternal(ResponseHeaderFilter.kt:17)
+at io.undertow.servlet.handlers.FilterHandler$FilterChainImpl.doFilter(FilterHandler.java:131)
+```
+
+### Nguyên nhân:
+Lỗi này thường xảy ra khi:
+1. **ICY stream headers không hợp lệ**: Stream trả về headers với ký tự đặc biệt hoặc encoding sai
+2. **Timeout kết nối**: Stream không phản hồi trong thời gian cho phép
+3. **SSL/TLS issues**: Kết nối HTTPS không thành công
+4. **Memory/Resource exhaustion**: Server thiếu bộ nhớ hoặc tài nguyên
+
+### Giải pháp:
+
+#### Bước 1: Cập nhật lên phiên bản mới nhất
+Đảm bảo bạn đang sử dụng **v1.1.0** với các cải tiến error handling:
+
+```yaml
+lavalink:
+  plugins:
+    - dependency: "com.github.ZenKho-chill:zk.icy.stream.lavalink:v1.1.0"
+      repository: "https://jitpack.io"
+```
+
+#### Bước 2: Cấu hình timeout và retry
+Thêm cấu hình để xử lý stream không ổn định:
+
+```yaml
+plugins:
+  icy:
+    # Increase timeouts for unstable streams
+    connectionTimeout: 20000  # 20 seconds
+    readTimeout: 45000        # 45 seconds
+    
+    # Enable auto-reconnection
+    autoReconnect: true
+    maxRetries: 5
+    retryDelay: 3000          # 3 seconds between retries
+    
+    # Handle redirects
+    followRedirects: true
+    
+    # Disable metadata if causing issues
+    enableMetadata: false     # Set to false if metadata parsing fails
+```
+
+#### Bước 3: Cải thiện Lavalink server config
+Trong `application.yml`, thêm các cấu hình cho Undertow:
+
+```yaml
+server:
+  undertow:
+    # Increase buffer sizes for ICY streams
+    buffer-size: 16384
+    io-threads: 4
+    worker-threads: 64
+    direct-buffers: true
+    
+    # Increase max headers size for ICY metadata
+    max-http-header-size: 8192
+
+lavalink:
+  server:
+    # Increase buffer for streaming
+    bufferDurationMs: 1000
+    frameBufferDurationMs: 10000
+    
+    # Enable only necessary sources to reduce load
+    sources:
+      youtube: true
+      soundcloud: true
+      http: true          # Keep this for ICY streams
+      local: false
+      bandcamp: false
+      vimeo: false
+      twitch: false
+```
+
+#### Bước 4: Bật debug logging để tìm nguyên nhân cụ thể
+```yaml
+logging:
+  level:
+    lavalink.server.io: DEBUG
+    com.zenkho.icy: DEBUG
+    io.undertow: DEBUG
+```
+
+#### Bước 5: Test cụ thể stream URL
+Kiểm tra stream có hoạt động không:
+
+```bash
+# Test basic connectivity
+curl -I -H "Icy-MetaData: 1" "https://your-stream-url.mp3"
+
+# Check response headers
+curl -v -H "Icy-MetaData: 1" "https://your-stream-url.mp3" | head -c 1000
+```
+
+#### Bước 6: Giải pháp cho các trường hợp đặc biệt
+
+**Nếu stream có SSL issues:**
+```yaml
+plugins:
+  icy:
+    # For HTTPS streams with certificate issues
+    followRedirects: true
+    connectionTimeout: 30000
+```
+
+**Nếu stream có encoding issues:**
+```yaml
+plugins:
+  icy:
+    # Disable metadata parsing to avoid header parsing issues
+    enableMetadata: false
+```
+
+**Nếu server bị quá tải:**
+```yaml
+server:
+  undertow:
+    worker-threads: 32    # Reduce if server has limited CPU
+    
+lavalink:
+  server:
+    bufferDurationMs: 400      # Lower values for less memory usage
+    frameBufferDurationMs: 5000
+```
+
+---

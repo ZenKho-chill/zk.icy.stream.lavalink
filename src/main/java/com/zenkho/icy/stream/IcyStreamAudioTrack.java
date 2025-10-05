@@ -12,6 +12,8 @@ import com.zenkho.icy.source.IcySourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class IcyStreamAudioTrack extends BaseAudioTrack {
 
     private static final Logger log = LoggerFactory.getLogger(IcyStreamAudioTrack.class);
@@ -27,20 +29,42 @@ public class IcyStreamAudioTrack extends BaseAudioTrack {
 
     @Override
     public void process(LocalAudioTrackExecutor executor) throws Exception {
-        try (IcyHttpStream httpStream = new IcyHttpStream(
-            trackInfo.identifier,
-            sourceManager.getHttpClient(),
-            config
-        )) {
+        IcyHttpStream httpStream = null;
+        try {
+            httpStream = new IcyHttpStream(
+                trackInfo.identifier,
+                sourceManager.getHttpClient(),
+                config
+            );
+            
             log.info("Processing stream: {}", trackInfo.title);
             
             // Get the input stream
             SeekableInputStream inputStream = httpStream.getInputStream();
             
+            if (inputStream == null) {
+                throw new IllegalStateException("Failed to get input stream from ICY HTTP stream");
+            }
+            
             // Create an MP3 audio track and process it
             // Most ICY streams are MP3 format
             Mp3AudioTrack mp3Track = new Mp3AudioTrack(trackInfo, inputStream);
             mp3Track.process(executor);
+            
+        } catch (IOException e) {
+            log.error("IO error processing ICY stream: {} - {}", trackInfo.identifier, e.getMessage());
+            throw new RuntimeException("Failed to process ICY stream: " + e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("Unexpected error processing ICY stream: {} - {}", trackInfo.identifier, e.getMessage(), e);
+            throw e;
+        } finally {
+            if (httpStream != null) {
+                try {
+                    httpStream.close();
+                } catch (IOException e) {
+                    log.warn("Error closing ICY HTTP stream: {}", e.getMessage());
+                }
+            }
         }
     }
 

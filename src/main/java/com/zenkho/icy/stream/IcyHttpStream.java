@@ -36,53 +36,88 @@ public class IcyHttpStream implements Closeable {
     }
 
     private void connect() throws IOException {
-        Request request = new Request.Builder()
-            .url(url)
-            .header("Icy-MetaData", "1")
-            .header("User-Agent", "Lavalink ICY Stream Plugin/1.0")
-            .build();
+        try {
+            Request request = new Request.Builder()
+                .url(url)
+                .header("Icy-MetaData", "1")
+                .header("User-Agent", "Lavalink ICY Stream Plugin/1.1.0")
+                .header("Accept", "*/*")
+                .header("Connection", "close")
+                .build();
 
-        response = httpClient.newCall(request).execute();
+            response = httpClient.newCall(request).execute();
 
-        if (!response.isSuccessful()) {
-            response.close();
-            throw new IOException("Unexpected response code: " + response.code());
-        }
+            if (!response.isSuccessful()) {
+                String errorMsg = String.format("HTTP %d: %s for URL: %s", 
+                    response.code(), response.message(), url);
+                response.close();
+                throw new IOException(errorMsg);
+            }
 
-        // Parse ICY headers
-        String icyMetaIntStr = response.header("icy-metaint");
-        if (icyMetaIntStr != null) {
-            try {
-                icyMetaInt = Integer.parseInt(icyMetaIntStr);
-                log.info("ICY metadata interval: {}", icyMetaInt);
-            } catch (NumberFormatException e) {
-                log.warn("Invalid icy-metaint header: {}", icyMetaIntStr);
+            // Parse ICY headers with better error handling
+            String icyMetaIntStr = response.header("icy-metaint");
+            if (icyMetaIntStr != null && !icyMetaIntStr.isEmpty()) {
+                try {
+                    icyMetaInt = Integer.parseInt(icyMetaIntStr.trim());
+                    if (icyMetaInt < 0) {
+                        log.warn("Negative icy-metaint header: {}, setting to 0", icyMetaIntStr);
+                        icyMetaInt = 0;
+                    } else {
+                        log.info("ICY metadata interval: {}", icyMetaInt);
+                    }
+                } catch (NumberFormatException e) {
+                    log.warn("Invalid icy-metaint header: {}, setting to 0", icyMetaIntStr);
+                    icyMetaInt = 0;
+                }
+            } else {
                 icyMetaInt = 0;
             }
-        } else {
-            icyMetaInt = 0;
+
+            // Safely extract ICY headers
+            String icyName = sanitizeHeader(response.header("icy-name"));
+            String icyGenre = sanitizeHeader(response.header("icy-genre"));
+            String icyBr = sanitizeHeader(response.header("icy-br"));
+
+            log.info("Connected to stream - Name: {}, Genre: {}, Bitrate: {}kbps", 
+                icyName != null ? icyName : "Unknown", 
+                icyGenre != null ? icyGenre : "Unknown", 
+                icyBr != null ? icyBr : "Unknown");
+
+            ResponseBody body = response.body();
+            if (body == null) {
+                response.close();
+                throw new IOException("Response body is null for URL: " + url);
+            }
+
+            InputStream rawStream = body.byteStream();
+            
+            if (icyMetaInt > 0 && config.isEnableMetadata()) {
+                inputStream = new IcyMetadataInputStream(rawStream, icyMetaInt);
+            } else {
+                inputStream = new IcyStreamInputStream(rawStream);
+            }
+            
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Invalid URL: " + url, e);
+        } catch (IOException e) {
+            throw e; // Re-throw IOException as is
+        } catch (Exception e) {
+            throw new IOException("Unexpected error connecting to stream: " + url, e);
         }
-
-        String icyName = response.header("icy-name");
-        String icyGenre = response.header("icy-genre");
-        String icyBr = response.header("icy-br");
-
-        log.info("Connected to stream - Name: {}, Genre: {}, Bitrate: {}kbps", 
-            icyName, icyGenre, icyBr);
-
-        ResponseBody body = response.body();
-        if (body == null) {
-            response.close();
-            throw new IOException("Response body is null");
+    }
+    
+    /**
+     * Sanitize header values to prevent issues with special characters
+     */
+    private String sanitizeHeader(String headerValue) {
+        if (headerValue == null || headerValue.trim().isEmpty()) {
+            return null;
         }
-
-        InputStream rawStream = body.byteStream();
         
-        if (icyMetaInt > 0 && config.isEnableMetadata()) {
-            inputStream = new IcyMetadataInputStream(rawStream, icyMetaInt);
-        } else {
-            inputStream = new IcyStreamInputStream(rawStream);
-        }
+        // Remove any control characters and normalize
+        return headerValue.replaceAll("[\\p{Cntrl}]", "")
+                         .trim()
+                         .replaceAll("\\s+", " "); // Replace multiple spaces with single space
     }
 
     public SeekableInputStream getInputStream() {
@@ -195,33 +230,57 @@ public class IcyHttpStream implements Closeable {
         }
 
         private void readMetadata() throws IOException {
-            int size = delegate.read();
-            if (size < 0) {
-                throw new IOException("Unexpected end of stream while reading metadata size");
-            }
-
-            int metadataLength = size * 16;
-            if (metadataLength == 0) {
-                return;
-            }
-
-            byte[] metadataBytes = new byte[metadataLength];
-            int bytesRead = 0;
-            while (bytesRead < metadataLength) {
-                int result = delegate.read(metadataBytes, bytesRead, metadataLength - bytesRead);
-                if (result < 0) {
-                    throw new IOException("Unexpected end of stream while reading metadata");
+            try {
+                int size = delegate.read();
+                if (size < 0) {
+                    throw new IOException("Unexpected end of stream while reading metadata size");
                 }
-                bytesRead += result;
-            }
 
-            String metadata = new String(metadataBytes, "UTF-8").trim();
-            String title = metadataParser.parseStreamTitle(metadata);
-            
-            if (title != null && !title.equals(streamTitle)) {
-                streamTitle = title;
-                log.info("Now playing: {}", streamTitle);
-                // TODO: Emit metadata update event to Lavalink
+                int metadataLength = size * 16;
+                if (metadataLength == 0) {
+                    return; // No metadata to read
+                }
+                
+                // Sanity check for metadata length
+                if (metadataLength > 16 * 255) { // Maximum possible metadata length
+                    log.warn("Metadata length seems too large: {} bytes, skipping", metadataLength);
+                    delegate.skip(metadataLength);
+                    return;
+                }
+
+                byte[] metadataBytes = new byte[metadataLength];
+                int totalBytesRead = 0;
+                
+                while (totalBytesRead < metadataLength) {
+                    int result = delegate.read(metadataBytes, totalBytesRead, metadataLength - totalBytesRead);
+                    if (result < 0) {
+                        throw new IOException("Unexpected end of stream while reading metadata");
+                    }
+                    totalBytesRead += result;
+                }
+
+                // Process metadata with proper encoding handling
+                String metadata = new String(metadataBytes, "UTF-8").trim();
+                
+                // Remove null bytes that might be present in metadata
+                metadata = metadata.replaceAll("\0", "").trim();
+                
+                if (!metadata.isEmpty()) {
+                    String title = metadataParser.parseStreamTitle(metadata);
+                    
+                    if (title != null && !title.equals(streamTitle)) {
+                        streamTitle = title;
+                        log.info("Now playing: {}", streamTitle);
+                        // TODO: Emit metadata update event to Lavalink
+                    }
+                }
+                
+            } catch (IOException e) {
+                log.error("Error reading ICY metadata, continuing without metadata: {}", e.getMessage());
+                // Don't throw the exception, just log it and continue
+            } catch (Exception e) {
+                log.error("Unexpected error processing ICY metadata: {}", e.getMessage(), e);
+                // Don't throw the exception, just log it and continue
             }
         }
     }
